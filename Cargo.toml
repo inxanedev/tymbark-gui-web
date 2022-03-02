@@ -2,7 +2,7 @@
 name = "tymbark-gui"
 version = "0.1.0"
 edition = "2021"
-license = "Unlicense"
+license = "CC-BY-4.0"
 description = "GUI Tymbark generator made with egui"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
