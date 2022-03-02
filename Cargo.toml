@@ -1,6 +1,6 @@
 [package]
 name = "tymbark-gui"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "CC-BY-4.0"
 description = "GUI Tymbark generator made with egui"
