@@ -14,14 +14,14 @@ fn read_wordlist<T: ToString>(filename: &T) -> Vec<String> {
     log::info!("Reading wordlist...");
     match fs::read_to_string(filename.to_string()) {
         Ok(s) => {
-            let result = s.split_whitespace().map(|line| line.to_owned()).collect();
+            let result = s.split('\n').map(|line| line.trim().to_owned()).collect();
             log::info!("Done reading wordlist!");
             result
         }
         Err(e) => {
             log::error!("Cannot open wordlist file! {}", e);
             
-            let title= CString::new("Cannot find wordlist!").unwrap();
+            let title = CString::new("Cannot find wordlist!").unwrap();
             let text = CString::new("Make sure there is a food.txt file next to the executable, or pass your own wordlist using the -f command line parameter.").unwrap();
 
             unsafe {
