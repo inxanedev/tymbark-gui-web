@@ -51,11 +51,29 @@ impl epi::App for TymbarkGUI {
             ui.add_space(5.0);
             ui.separator();
             ui.add_space(5.0);
-            ui.vertical_centered_justified(|ui| {
+            /* ui.vertical_centered_justified(|ui| {
                 let mut button_size = ui.available_size();
                 button_size.y = 35.0;
                 if ui.add_sized(button_size, Button::new("Generate")).clicked() {
                     self.tymbark = self.generator.generate(self.nouns);
+                }
+            }); */
+            ui.horizontal(|ui| {
+                let row_size = ui.available_width() - 3.0 * 5.0;
+                let back_size = row_size * 0.1;
+                let generate_size = row_size * 0.8;
+                let next_size = row_size * 0.1;
+                
+                let height = 35.0;
+
+                if ui.add_sized([back_size, height], Button::new("<")).clicked() {
+                    
+                }
+                if ui.add_sized([generate_size, height], Button::new("Generate")).clicked() {
+                    self.tymbark = self.generator.generate(self.nouns);
+                }
+                if ui.add_sized([next_size, height], Button::new(">")).clicked() {
+
                 }
             });
             ui.add_space(10.0);
