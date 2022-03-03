@@ -2,8 +2,10 @@
 
 mod logging;
 mod tymbark;
+mod history;
 
 use eframe::{egui::{self, Slider, Button, Label, Sense}, epi, epaint::Vec2};
+use history::History;
 use tymbark::TymbarkGenerator;
 
 use clap::Parser;
@@ -17,17 +19,21 @@ struct Args {
 struct TymbarkGUI {
     nouns: u32,
     generator: TymbarkGenerator,
-    tymbark: String
+    tymbark: String,
+    history: History,
 }
 
 impl Default for TymbarkGUI {
     fn default() -> TymbarkGUI {
         let args = Args::parse();
 
+        let default_tymbark = String::default();
+
         TymbarkGUI {
             nouns: 2,
             generator: TymbarkGenerator::new(&args.file),
-            tymbark: String::from("Tymbark jabłko mięta")
+            tymbark: default_tymbark,
+            history: History::new(5)
         }
     }
 }
@@ -51,13 +57,6 @@ impl epi::App for TymbarkGUI {
             ui.add_space(5.0);
             ui.separator();
             ui.add_space(5.0);
-            /* ui.vertical_centered_justified(|ui| {
-                let mut button_size = ui.available_size();
-                button_size.y = 35.0;
-                if ui.add_sized(button_size, Button::new("Generate")).clicked() {
-                    self.tymbark = self.generator.generate(self.nouns);
-                }
-            }); */
             ui.horizontal(|ui| {
                 let row_size = ui.available_width() - 3.0 * 5.0;
                 let back_size = row_size * 0.1;
@@ -67,13 +66,23 @@ impl epi::App for TymbarkGUI {
                 let height = 35.0;
 
                 if ui.add_sized([back_size, height], Button::new("<")).clicked() {
-                    
+                    self.history.back();
+                    match self.history.get() {
+                        Some(s) => self.tymbark = s.clone(),
+                        None => self.history.reset_index()
+                    }
                 }
                 if ui.add_sized([generate_size, height], Button::new("Generate")).clicked() {
                     self.tymbark = self.generator.generate(self.nouns);
+                    self.history.add(self.tymbark.clone());
+                    self.history.reset_index();
                 }
                 if ui.add_sized([next_size, height], Button::new(">")).clicked() {
-
+                    self.history.next();
+                    match self.history.get() {
+                        Some(s) => self.tymbark = s.clone(),
+                        None => self.history.reset_index()
+                    }
                 }
             });
             ui.add_space(10.0);
