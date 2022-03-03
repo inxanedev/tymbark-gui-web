@@ -46,7 +46,7 @@ impl epi::App for TymbarkGUI {
             ui.add_space(5.0);
             ui.horizontal(|ui| {
                 ui.label("Noun amount:");
-                ui.add(Slider::new(&mut self.nouns, 1..=10));
+                ui.add(Slider::new(&mut self.nouns, 1..=25));
             });
             ui.add_space(5.0);
             ui.separator();
