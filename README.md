@@ -1,4 +1,1 @@
-# tymbark-gui
-
-## building
-Run `cargo build --release` and copy food.txt file to the output directory
+web fork of https://github.com/inxanedev/tymbark-gui
