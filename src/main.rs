@@ -1,20 +1,13 @@
 #![windows_subsystem = "windows"]
 
-mod logging;
 mod tymbark;
 mod history;
 
-use eframe::{egui::{self, Slider, Button, Label, Sense}, epi, epaint::Vec2};
+use eframe::{egui::{self, Slider, Button}};
+use egui::{Label, Sense};
 use history::History;
 use tymbark::TymbarkGenerator;
-
-use clap::Parser;
-
-#[derive(Parser)]
-struct Args {
-    #[clap(short, long, default_value_t = String::from("food.txt"))]
-    file: String
-}
+use web_sys::{window};
 
 struct TymbarkGUI {
     nouns: u32,
@@ -23,23 +16,23 @@ struct TymbarkGUI {
     history: History,
 }
 
+static FOOD_LIST: &str = include_str!("../food.txt");
+
 impl Default for TymbarkGUI {
     fn default() -> TymbarkGUI {
-        let args = Args::parse();
-
         let default_tymbark = String::default();
 
         TymbarkGUI {
             nouns: 2,
-            generator: TymbarkGenerator::new(&args.file),
+            generator: TymbarkGenerator::new(FOOD_LIST),
             tymbark: default_tymbark,
             history: History::new(5)
         }
     }
 }
 
-impl epi::App for TymbarkGUI {
-    fn update(&mut self, ctx: &egui::Context, _frame: &epi::Frame) {
+impl eframe::App for TymbarkGUI {
+    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.vertical_centered_justified(|ui| {
                 ui.heading("Tymbark Generator");
@@ -85,27 +78,29 @@ impl epi::App for TymbarkGUI {
                     }
                 }
             });
+
             ui.add_space(10.0);
+
             ui.vertical_centered_justified(|ui| {
                 let display = ui.add_sized(ui.available_size(), Label::new(self.tymbark.as_str()).sense(Sense::click()));
                 if display.on_hover_text("Click me to copy!").clicked() {
-                    clipboard_win::set_clipboard(clipboard_win::formats::Unicode, self.tymbark.as_str()).unwrap();
+                    let _ = window().unwrap().navigator().clipboard().unwrap().write_text(self.tymbark.as_str());
                 }
             });
         });
     }
-
-    fn name(&self) -> &str {
-        "Tymbark GUI"
-    }
 }
 
 fn main() {
-    logging::setup_logger();
+    let web_options = eframe::WebOptions::default();
 
-    let options = eframe::NativeOptions {
-        initial_window_size: Some(Vec2::new(400.0, 300.0)),
-        ..Default::default()
-    };
-    eframe::run_native(Box::new(TymbarkGUI::default()), options);
+    wasm_bindgen_futures::spawn_local(async {
+        eframe::start_web(
+            "canvas", // hardcode it
+            web_options,
+            Box::new(|_cc| Box::new(TymbarkGUI::default())),
+        )
+        .await
+        .expect("failed to start eframe");
+    });
 }
