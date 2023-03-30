@@ -20,7 +20,3 @@ clipboard-win = "4.4.1"
 [[bin]]
 name = "tymbark-gui"
 path = "src/main.rs"
-
-[[bin]]
-name = "list_filterer"
-path = "src/list_filterer/main.rs"
